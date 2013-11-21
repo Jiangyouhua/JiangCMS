@@ -9,10 +9,10 @@ class Connect{
 
     public static function getInstance(){
         if(empty(self::$instance)){
-			$host=Config::$sql_server;
-			$dbname=Config::$sql_database;
-			$uid=Config::$sql_uid;
-			$pwd=Config::$sql_pwd;
+			$host=Admin_Config_Sql::$server;
+			$dbname=Admin_Config_Sql::$database;
+			$uid=Admin_Config_Sql::$uid;
+			$pwd=Admin_Config_Sql::$pwd;
             try{
             self::$instance = new PDO("mysql:host=$host;dbname=$dbname","$uid","$pwd",array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES'utf8';"));          
             }catch(PDOException $e){          	

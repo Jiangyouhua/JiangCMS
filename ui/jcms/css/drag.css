@@ -1,0 +1,71 @@
+@CHARSET "UTF-8";
+.drag{
+	position:relative;
+}
+
+.dragging{
+	background-color:#aaf;
+}
+
+.part{
+	border: 1px dotted #aaa;
+	border-radius:3px;
+	font-size: 1em;
+	min-height: 4em;
+}
+
+.part_logo{
+	min-height: 5em;
+	background-image: url("images/part_logo.png");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.part_copyright{
+	min-height: 5em;
+	background-image: url("images/part_copyright.png");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.part_navbar{
+	min-height: 5em;
+	background-image: url("images/part_navbar.png");
+	background-repeat: repeat-x;
+}
+
+.part_menu{
+	min-height: 20em;
+	background-image: url("images/part_menu.png");
+	background-repeat: repeat-y;
+}
+
+.part_ad{
+	min-height: 15em;
+	background-image: url("images/part_ad.png");
+	background-repeat: no-repeat;
+	background-position: 50% 100%;
+}
+
+.part_scroll{
+	min-height: 10em;
+	background-image: url("images/part_scroll.png");
+	background-repeat: repeat-x;
+	background-position: center;
+}
+
+.part_tab{
+	min-height: 30em;
+	background-image: url("images/part_tab.png");
+	background-repeat: no-repeat;
+	background-position: 0 0;
+}
+
+.part_copyright{
+	min-height: 5em;
+}
+
+.part_list{
+	min-height: 20em;
+	background-image: url("images/part_list.png");
+	background-repeat: repeat-y;
+}
+

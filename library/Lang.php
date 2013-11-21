@@ -4,18 +4,21 @@ class Lang {
 	
 	static protected $array;
 	
-	static function to($key,$name=null){
+	static function to($key,$name=null,$lang=null){
 		if(!$name){
 			$name="default";
 		}
 		
-		$lang="cn_ZH";
-		if(LANG){
-			$lang=LANG;
+		$lan="cn_ZH";
+		if(defined('LANG')){
+			$lan=LANG;
+		}
+		if($lang){
+			$lan=$lang;
 		}
 		
 		if(empty(self::$array[$name])){
-			$file=DIR."/lauguage/$lang/$name.ini";
+			$file=DIR."/lauguage/$lan/$name.ini";
 			$ini=new FileIni($file);
 			$arr=$ini->read();
 			self::$array[$name]=$ini->read();

@@ -4,10 +4,6 @@ class Part_Copyright extends Part{
 		$this->html=new Html("span");
 	}
 	protected function getHtml(){
-		if(!$this->array){
-			parent::getHtml();
-			return;
-		}
-		$this->html->add("Copyright © 2013 Jiang youhua.");
+		$this->html->add(Lang::to('copyright'));
 	}
 }

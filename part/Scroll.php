@@ -1,8 +1,6 @@
 <?php
-class Part_Rotation extends Part{
+class Part_Rotation extends Part_Ad{
 	protected function init(){
-		$this->style="rotation";
-		$this->url=true;
-		$this->html=new Html('ul');
+		$this->style="scroll";
 	}
 }

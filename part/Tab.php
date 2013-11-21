@@ -32,6 +32,7 @@ class Part_Tab extends Part{
 				$a->class='active';
 			}
 			$a->href="#tab_$key";
+			$a->class="tab_item";
 			$a->add(Lang::to($value));
 			$li->add($a);
 			$ul->add($li);

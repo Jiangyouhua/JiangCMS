@@ -1,3 +1,1 @@
-<?php 
-phpinfo();
-?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"  ><head  ><title  >index</title><link rel="stylesheet" href="D:\GitHub\php\JiangCMS/ui/0/0.css" type="text/css"  ><link rel="stylesheet" href="D:\GitHub\php\JiangCMS/ui/0/0.css" type="text/css"  ><script type="text/javascript" src="D:\GitHub\php\JiangCMS/ui/0/0.js"  ></script></head><body  ><?php include('D:\GitHub\php\JiangCMS/autoload.php'); defined('LANG') || define('LANG', 'cn_ZH');?><Placeholder  ></Placeholder></body></html>
