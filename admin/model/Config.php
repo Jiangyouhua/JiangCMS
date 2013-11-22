@@ -2,8 +2,8 @@
 class Admin_Model_Config extends Model {
 	
 	protected function post(){		
-		$name="Admin_Config_".$this->post['jcms_name'];
-		$file = DIR."/admin/config/".$this->post['jcms_name'].".php";
+		$name="Admin_Config_".$this->post['jcms_title'];
+		$file = DIR."/admin/config/".$this->post['jcms_title'].".php";
 		$str [] = "<?php";
 		$str [] = "class $name{";
 		foreach ( $this->post as $key => $value ) {

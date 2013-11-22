@@ -11,7 +11,6 @@ class Admin_Config_Web{
 	public static $slogan='最便捷的PHP CMS系统';
 	public static $contact='Jiang Youhua';
 	public static $email='jingo1997@163.com';
-	public static $path='jiangyh';
 	public static $keys='php cms jiangyh jingo1997';
 	public static $language='cn_ZH';
 	public static $ui='default';

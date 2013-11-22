@@ -77,7 +77,7 @@ class Part_List extends Part {
 				$span = new Html ( 'span' );
 				$span->class = "icon-" . $this->icon [$key];
 				if ($key == 'delete') {
-					$a->href = $this->handle . "?id=$id&name=$name&jcms_edit=$key&jcms_modle=$this->model";
+					$a->href = $this->handle . "?id=$id&name=$name&jcms_edit=$key&jcms_model=$this->model";
 				}else{
 					$a->href="#";
 					$a->onclick="edit_$key($id,'".$name."')";

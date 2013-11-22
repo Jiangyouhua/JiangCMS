@@ -12,13 +12,26 @@ abstract class DB {
 	protected $query;
 	protected $re;
 	protected $id;
+	protected $prefix;
 
 	function __construct($table=null){
-		$this->table=$table;
+		$this->prefix=null;
+		if(!empty(Admin_Config_Sql::$prefix)){
+			$this->prefix=Admin_Config_Sql::$prefix."_";
+		}
+		$this->table="`$this->prefix$table`";
+	}
+	
+	static function table($table){
+		$prefix=null;
+		if(!empty(Admin_Config_Sql::$prefix)){
+			$prefix=Admin_Config_Sql::$prefix."_";
+		}
+		return "`$prefix$table`";
 	}
 
 	function setTable($table){
-		$this->table="`".$table."`";
+		$this->table="`$this->prefix$table`";
 	}
 	
 	function getRe(){
@@ -78,7 +91,7 @@ abstract class DB {
 					}
 				}else{
 					$this->re[]=$con->exec($sql);
-					if($str=="INSERT"){
+					if(preg_match("/^INSERT/",$sql)){
 						$this->id=$con->lastInsertId();
 					}
 				}

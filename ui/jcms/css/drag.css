@@ -12,6 +12,10 @@
 	border-radius:3px;
 	font-size: 1em;
 	min-height: 4em;
+	text-align: center;
+	overflow: hidden;
+	white-space: nowrap;
+	color:#f00;
 }
 
 .part_logo{
@@ -57,10 +61,6 @@
 	background-image: url("images/part_tab.png");
 	background-repeat: no-repeat;
 	background-position: 0 0;
-}
-
-.part_copyright{
-	min-height: 5em;
 }
 
 .part_list{

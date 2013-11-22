@@ -43,7 +43,7 @@ class Admin_Part_Page extends Part{
 		
 		$form=new Part_Form();
 		$form->setTitle('Form');
-		$form->setModle('page');
+		$form->setModel('page');
 		$form->setArray($array);
 		
 		$span=new Html('span');

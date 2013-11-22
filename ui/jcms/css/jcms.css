@@ -6,6 +6,13 @@ body {
 	font: .8em \5FAE\8F6F\96C5\9ED1, Arial, Helvetica, sans-serif;
 }
 
+a#part_remove{
+	border: 1px solid #333;
+	border-radius:10px;
+	padding:1px 2px 2px 1px;
+	background:#f88;
+}
+
 #jcms_editarea{
 	border: 1px dotted #aaa;
 	border-radius:5px;
@@ -388,6 +395,11 @@ button {
 	padding: 6px 0 ;
 	width: 35%;
 	margin:0 .4em;
+}
+
+.title button{
+	position:relative;
+	top:12px;
 }
 
 .tool button,.tool select{

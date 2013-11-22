@@ -16,7 +16,7 @@ class PcDir {
 	}
 	protected function get() {
 		$handle = opendir ( $this->dir );
-		$files=$this->condition['file'];
+		$files = $this->condition ['file'];
 		$folders = $this->condition ['folder'];
 		
 		while ( false !== ($file = readdir ( $handle )) ) {
@@ -24,23 +24,24 @@ class PcDir {
 				continue;
 			}
 			if (is_dir ( $this->dir . '/' . $file )) {
-				if (!$folders ['filter'] || !in_array ( $file, $folders ['filter'] )) {
+				if (! $folders ['filter'] || ! in_array ( $file, $folders ['filter'] )) {
 					$this->folder [] = iconv ( 'gb2312', 'utf-8', $file );
 				}
 			} else {
-				if (!preg_match ( '/^\./', $file ) && 
-				(!$files['filter'] || !in_array($file, $files['filter']))) {
+				if (! preg_match ( '/^\./', $file ) && (! $files ['filter'] || ! in_array ( $file, $files ['filter'] ))) {
 					$f = iconv ( 'gb2312', 'utf-8', $file );
-					if($files['suffix']){
-						$s=$files['suffix'];
-						$f=preg_replace("/$s$/", '', $f);
+					if ($files ['suffix']) {
+						$s = $files ['suffix'];
+						if (preg_match ( "/$s$/", $f )) {
+							$this->file [] = preg_replace ( "/$s$/", '', $f );
+						}
+					} else {
+						$this->file [] = $f;
 					}
-					$this->file []=$f;
 				}
 			}
 		}
 	}
-	
 	function getFile($suffix = null, array $filter = null) {
 		if ($this->file && $this->condition ['file'] ['suffix'] == $suffix && $this->condition ['file'] ['filter'] == $filter) {
 			return $this->file;
@@ -51,7 +52,6 @@ class PcDir {
 		$this->get ();
 		return $this->file;
 	}
-	
 	function getFolder(array $filter = null) {
 		if ($this->folder && $this->condition ['folder'] ['filter'] == $filter) {
 			return $this->folder;

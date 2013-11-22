@@ -3,7 +3,7 @@ $(function() {
 	var b_drag = false;
 	var it;
 	var key = null;
-	var y=null;
+	var y = null;
 
 	/* 禁止选择 */
 	$(document).bind("selectstart", function() {
@@ -23,14 +23,26 @@ $(function() {
 	$('.drag').mousedown(function() {
 		it = this;
 		key = $(it).attr('id');
-		b_drag = drag_init(this, 0);
+		b_drag = drag_init(this);
 	});
 	// 编辑区组件移动
 	$("#jcms_editarea").on('mousedown', '.drag', function(event) {
 		it = this;
 		key = 'jcms_editarea';
-		b_drag = drag_init(this, 1);
-		y=event.pageY;
+		b_drag = drag_init(this);
+		y = event.pageY;
+	});
+	
+	//移除
+	$("#jcms_editarea").on('mouseover','.part',function(event){
+		$("#part_remove").remove();
+		var id=$(this).attr('id');
+		var str="<a id='part_remove' href=# onclick=part_remove('"+id+"')><span class='icon-remove'></span></a>";
+		$('body').append(str);
+		$("#part_remove").css('position','absolute');
+		var p=$(this).offset();
+		$("#part_remove").css('top',p.top+5);
+		$("#part_remove").css('left',p.left+5);
 	});
 
 	// 释放
@@ -56,25 +68,21 @@ $(function() {
 		}
 	});
 
-	/* 在内容块释放或操作*/
+	/* 在内容块释放或操作 */
 	$('#jcms_editarea').on('mouseup', '.content', function(event) {
 		if (b_drag) {
-			b_drag = drag_part(key,it,this,y,event.pageY);
+			b_drag = drag_part(key, it, this, y, event.pageY);
 			b_drag = false;
 		}
 	});
 });
 
 /* 拖曳初始化 */
-function drag_init(it, bool) {
+function drag_init(it) {
 	var p = $(it).position();
 	var w = parseInt($(it).width() / 2);
 	var h = parseInt($(it).height() / 2);
-	if (bool) {
-		$(it).find('.content').addClass("dragging");
-	} else {
-		$(it).addClass("dragging");
-	}
+	$(it).addClass("dragging");
 	$(document).mousemove(function(e) {
 		var ox = e.pageX - p.left - w;
 		var oy = e.pageY - p.top + 2;
@@ -97,7 +105,7 @@ function drag_block(key, it) {
 	return false;
 }
 
-function drag_part(key, it,t,y,oy) {
+function drag_part(key, it, t, y, oy) {
 	var keys = key.split("_");
 	if (keys[0] == 'part') {
 		var div = null;
@@ -105,26 +113,28 @@ function drag_part(key, it,t,y,oy) {
 		$(t).append(div);
 	}
 	if (keys[0] == 'jcms') {
-		if(y<oy){
+		if (y < oy) {
 			$(t).closest('.drag').after(it);
-		}else{
+		} else {
 			$(t).closest('.drag').before(it);
 		}
 	}
 	return false;
 }
 
-function drag_delblock(key,it){
+function drag_delblock(key, it) {
 	var keys = key.split("_");
 	if (keys[0] == 'jcms') {
 		$(it).remove();
+		$('#part_remove').remove();
 	}
 	return false;
 }
 
-function drag_move(key,it,t){
+function drag_move(key, it, t) {
 	alert(123);
 }
+
 /* 格式化拖曳块 */
 function getBlock(keys) {
 	str = "<div class='drag span'>";
@@ -137,13 +147,47 @@ function getBlock(keys) {
 	str += "</div>";
 	return str;
 }
-var i = 0;
 function getPart(keys) {
-	i++;
-	var name = prompt("Unit's name", "default" + i);
-	if (!name) {
+	var d = Date.parse(new Date());
+	var t = "U"+d / 1000;
+	var name=prompt(unit_prompt,t);
+	if(!name){
 		return;
+	}	
+	return "<div id="+name+" class='part part_" + keys[1] + "'>*('" + name+ "','" + keys[1]
+			+ "')*</part>";
+}
+
+/* 页面加载 */
+function load_page() {
+	var page = $("select[name='page']").val();
+	$.post('handle.php', {
+		jcms_model : 'layout',
+		jcms_title : 'page',
+		page : page
+	}, function(e) {
+		$("#jcms_editarea").html(e);
+	})
+}
+
+/* 页面保存 */
+function save_page() {
+	var page = $("select[name='page']").val();
+	var str = $("#jcms_editarea").html();
+	if (str) {
+		$.post('handle.php', {
+			jcms_model : 'layout',
+			jcms_title : 'layout',
+			page:page,
+			str:str
+		},function(e){
+			alert(e);
+		})
 	}
-	return "<div class='part part_" + keys[1] + "'>" + name + "<br>(" + keys[1]
-			+ ")</part>";
+}
+
+/*unit移除*/
+function part_remove(id){
+	$("#"+id).remove();
+	$("#part_remove").remove();
 }

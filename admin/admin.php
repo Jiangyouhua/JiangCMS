@@ -13,18 +13,19 @@
 <script type="text/javascript" src="ui/jquery/js/jquery-1.9.1.js"></script>
 <script type="text/javascript" src="ui/jquery/js/jquery-ui-1.10.3.js"></script>
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-</head>
-<body style="width: 98%">
-	<?php 
+<?php 
 	include("./lab/AutoLoad.php");
 	?>
-	<div class="span12 top">
+</head>
+<body>
+	
+	<div class="top">
 		<span class="adminlogo"> <?php Block::format("logo",1)?>
 		</span> <span class="adminMenu"> <?php Block::format("menu",2)?>
 		</span> <span class="adminLogout"> <?php Block::format("logout",2)?>
 		</span>
 	</div>
-	<div class="span12">
+	<div >
 		<span class="span12"><?php Block::format("from",3)?>
 		</span><span class="span12"><?php Block::format("layout",4)?></span>
 	</div>

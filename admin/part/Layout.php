@@ -93,6 +93,14 @@ class Admin_Part_Layout extends Part {
 		$title->add ( Lang::to ( 'layout' ) );
 		$span->add($title);
 		
+		/*button*/
+		$button=new Html('button');
+		$button->type='button';
+		$button->class='submit right';
+		$button->onclick='save_page()';
+		$button->add(Lang::to('Save'));
+		$title->add($button);
+		
 		/*layout*/
 		$layout=new Html();
 		$layout->id='jcms_editarea';

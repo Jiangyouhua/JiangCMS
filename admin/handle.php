@@ -4,7 +4,7 @@ if (! $_POST) {
 	header ( '' );
 }
 
-$class = "Admin_Model_" . $_REQUEST ['jcms_modle'];
+$class = "Admin_Model_" . $_REQUEST ['jcms_model'];
 $model = Factory::getInstance ( $class );
 $model->handle();
 $back = $model->back();
@@ -17,7 +17,7 @@ switch ($back) {
 		echo 2;
 		break;
 	default :
-		echo 0;
+		echo $back;
 		break;
 }
 

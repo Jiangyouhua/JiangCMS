@@ -47,7 +47,7 @@ class Admin_Part_Config extends Part {
 		foreach ( $planes as $key => $value ) {
 			$form = new Part_Form ();
 			$form->setTitle ( $key );
-			$form->setModle('config');
+			$form->setModel('config');
 			$form->setArray ( $value );
 			$array [] = $form;
 		}

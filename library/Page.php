@@ -65,6 +65,10 @@ class Page implements IFormat{
 		$this->icon->href=$link;
 	}
 	
+	function addHead($string){
+		$this->head->add($string);
+	}
+	
 	function add($content){
 		$this->body->add($content);
 	}

@@ -3,18 +3,18 @@ class Part_Form extends Part {
 	protected $action;
 	protected $method;
 	protected $title;
-	protected $modle;
+	protected $model;
 	function setAction($url) {
 		$this->action = $url;
 	}
 	protected function init() {
 		$this->html = new Html ( 'form' );
 		$this->method = 'post';
-		$this->modle = 'default';
+		$this->model = 'default';
 		$this->action = 'handle.php';
 	}
-	function setModle($modle) {
-		$this->modle = $modle;
+	function setmodel($model) {
+		$this->model = $model;
 	}
 	function reMethod() {
 		$this->method = "get";
@@ -45,15 +45,15 @@ class Part_Form extends Part {
 		/* 设置处理类 */
 		$input = new Html ( 'input' );
 		$input->type = 'hidden';
-		$input->name = 'jcms_modle';
-		$input->value = $this->modle;
+		$input->name = 'jcms_model';
+		$input->value = $this->model;
 		$li->add ( $input );
 		
 		/* 保存单元标题 */
 		if ($this->title) {
 			$input = new Html ( 'input' );
 			$input->type = 'hidden';
-			$input->name = 'jcms_name';
+			$input->name = 'jcms_title';
 			$input->value = $this->title;
 			$li->add ( $input );
 		}
