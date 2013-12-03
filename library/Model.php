@@ -1,33 +1,28 @@
 <?php
 abstract class Model {
+	
 	protected $back;
-	protected $post;
-	protected $get;
+	protected $data;
+	protected $jcms;
+	protected $diff;
+	
 	function __construct() {
 		$this->back = false;
 		$this->init ();
+		$this->jcms=array('jcms_model'=>true,'jcms_function'=>true,'jcms_title'=>true);
+		$this->diff=array('jcms_model'=>true,'jcms_function'=>true,'jcms_title'=>true,'id'=>true);
+		if ($_POST) {
+			$this->data = $_POST;
+		}
+		if ($_GET) {
+			$this->data = $_GET;
+		}
 	}
 	
 	protected function init() {
 	}
 	
 	function handle() {
-		if ($_POST) {
-			$this->post = $_POST;
-			$this->post();
-		}
-		if ($_GET) {
-			$this->get = $_GET;
-			$this->get();
-		}
-	}
-	
-	protected function get() {
-		return ;
-	}
-	
-	protected function post(){
-		return;
 	}
 	
 	function back() {

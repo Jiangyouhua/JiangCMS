@@ -29,10 +29,8 @@ class Admin_Part_Config extends Part {
 			
 			$planes = array ();
 			foreach ( $properties as $k => $v ) {
-				$form = new Form ();
-				$form->setElemenu ( 'input' );
-				$form->setName ( $k );
-				$form->setLable ( $k );
+				$form = new Form ('input',$k,'text');
+				$form->setLabel($k);
 				$form->setValue ( $v );
 				$planes [$value] [$k] = $form;
 			}

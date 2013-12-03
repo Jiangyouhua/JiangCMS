@@ -41,8 +41,8 @@ $(function() {
 		$('body').append(str);
 		$("#part_remove").css('position','absolute');
 		var p=$(this).offset();
-		$("#part_remove").css('top',p.top+5);
-		$("#part_remove").css('left',p.left+5);
+		$("#part_remove").css('top',p.top-5);
+		$("#part_remove").css('left',p.left-5);
 	});
 
 	// 释放
@@ -75,6 +75,13 @@ $(function() {
 			b_drag = false;
 		}
 	});
+	
+	/*选择页面part*/
+	$(".layout_unit").click(function(){
+		$('.layout_unit').removeClass('select');
+		$(this).addClass('select');
+		$("input[name='name']").val($(this).html());
+	})
 });
 
 /* 拖曳初始化 */
@@ -159,26 +166,26 @@ function getPart(keys) {
 }
 
 /* 页面加载 */
-function load_page() {
-	var page = $("select[name='page']").val();
-	$.post('handle.php', {
-		jcms_model : 'layout',
-		jcms_title : 'page',
-		page : page
+function load_page(handle,model,fun) {
+	var id = $("select[name='layout']").val();
+	$.post(handle, {
+		jcms_model : model,
+		jcms_function:fun,
+		id : id
 	}, function(e) {
 		$("#jcms_editarea").html(e);
-	})
+	});
 }
 
 /* 页面保存 */
-function save_page() {
-	var page = $("select[name='page']").val();
+function save_page(handle,model,fun) {
+	var id = $("select[name='layout']").val();
 	var str = $("#jcms_editarea").html();
 	if (str) {
-		$.post('handle.php', {
-			jcms_model : 'layout',
-			jcms_title : 'layout',
-			page:page,
+		$.post(handle, {
+			jcms_model : model,
+			jcms_function:fun,
+			id:id,
 			str:str
 		},function(e){
 			alert(e);

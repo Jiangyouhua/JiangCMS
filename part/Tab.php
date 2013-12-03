@@ -28,12 +28,19 @@ class Part_Tab extends Part{
 		foreach ($this->tab as $key=>$value){
 			$li=new Html('li');
 			$a=new Html('a');
+			$array=null;
+			if (! is_array ( $value )) {
+				$array ['id'] = $key;
+				$array ['name'] = $value;
+			} else {
+				$array = $value;
+			}
 			if($key==0){
 				$a->class='active';
 			}
-			$a->href="#tab_$key";
+			$a->href="#tab_{$array ['id']}";
 			$a->class="tab_item";
-			$a->add(Lang::to($value));
+			$a->add(Lang::to($array['name']));
 			$li->add($a);
 			$ul->add($li);
 		}

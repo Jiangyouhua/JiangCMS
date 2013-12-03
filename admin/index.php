@@ -18,11 +18,11 @@
 <body>
 	<?php include("../autoload.php"); defined('LANG') || define('LANG', 'cn_ZH');?>
 	
-	<div class="span12 back">
-		<div class="span">
+	<div class="span0 back">
+		<div class=span>
 			<span class="textlogo"><?php echo Admin_Config_Back::$name?></span> 
-			<span> <?php Go::to('adminNavbar',"Navbar")?></span> 
-			<span class="right"><?php Go::to('adminLogout',"Lout");
+			<span> <?php Go::to('adminNavbar','Menu')?></span> 
+			<span class="right"><?php Go::to('adminLogout','Logout');
 			echo Admin_Config_Back::$copyright?>
 			</span>
 		</div>
@@ -32,6 +32,7 @@
 			<span class='config'>
 			<?php Go::to('adminConfig','Admin_Part_Config')?>
 			<?php Go::to('adminDesign','Admin_Part_Design')?> 
+			<?php Go::to('adminPublication','Admin_Part_Publication')?> 
 			</span>
 		</div>
 	</div>

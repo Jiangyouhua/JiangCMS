@@ -17,22 +17,44 @@ $(function() {
 
 	/* 标签栏 */
 	$('a.tab_item').click(function(event) {
+		$('#part_remove').remove();
 		$('a.tab_item').removeClass('active');
 		$(this).addClass('active');
-		id = $(this).attr('href');
+		var id = $(this).attr('href');
 		$('.plane').hide();
 		$(id).show();
 		event.preventDefault();
 	});
+	
+	/*重置*/
+	$('button[type="reset"]').click(function(){
+		$('input[name="id"]').val('');
+		$('form').find('[disabled="disabled"]').attr('disabled',false);
+	});
+	
 });
 
 /* list eidt */
 function edit_modify(id, name) {
-	$("form [name='jcms_id']").val(id);
-	$("form [name='jcms_name']").val(name);
+	$("form [name='id']").val(id);
 	$("#li" + id + " > span[class!='edit']").each(function() {
+		var array;
 		var key = $(this).attr('class');
+		array=key.split(' ');
 		var value = $(this).html();
-		$("form [name='" + key + "']").val(value);
+		$("form [name='" + array[0] + "']").val(value);
+		if(array[0]=='name' && value=='index'){
+			$("form [name='" + array[0] + "']").attr('disabled','disabled');
+		}
 	});
+}
+function edit_delete(id,handle,model,fun){
+	$.post(handle,{
+		jcms_handle:handle,
+		jcms_model:model,
+		jcms_function:fun,
+		id:id
+	},function(e){
+		alert(e);
+	})
 }

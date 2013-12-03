@@ -1,13 +1,18 @@
 <?php
-include("../autoload.php");
+include ("../autoload.php");
 if (! $_POST) {
 	header ( '' );
 }
 
-$class = "Admin_Model_" . $_REQUEST ['jcms_model'];
-$model = Factory::getInstance ( $class );
-$model->handle();
-$back = $model->back();
+$modelname = "Admin_Model_" . $_REQUEST ['jcms_model'];
+$model = Factory::getInstance ( $modelname );
+if (empty ( $_REQUEST ['jcms_function'] )) {
+	$model->handle ();
+}else{
+	$function=$_REQUEST ['jcms_function'];
+	$model->$function();
+}
+$back = $model->back ();
 
 switch ($back) {
 	case 1 :

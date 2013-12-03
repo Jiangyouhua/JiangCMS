@@ -43,7 +43,7 @@ class DbInsert extends Db {
 	}
 	
 	function lastId(){
-		return $this->lastid;
+		return $this->id;
 	}
 }
 ?>

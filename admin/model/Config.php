@@ -1,15 +1,13 @@
 <?php
 class Admin_Model_Config extends Model {
 	
-	protected function post(){		
+	function handle(){		
 		$name="Admin_Config_".$this->post['jcms_title'];
 		$file = DIR."/admin/config/".$this->post['jcms_title'].".php";
 		$str [] = "<?php";
 		$str [] = "class $name{";
-		foreach ( $this->post as $key => $value ) {
-			if (preg_match('/^jcms_/', $key)) {
-				continue;
-			}
+		$array=array_diff_key($this->data, $this->diff);
+		foreach ( $array as $key => $value ) {
 			$str [] = "	public static $$key='$value';";
 		}
 		$str [] = "}";

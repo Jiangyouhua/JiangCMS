@@ -1,129 +1,189 @@
 <?php
 class Form implements IFormat {
 	protected $element;
+	protected $name;
+	protected $type;
+	protected $label;
 	protected $attr;
 	protected $value;
-	protected $name;
-	protected $lable;
-	protected $option;
-	
-	/* 表单元素名称 */
-	function setElemenu($element) {
+	protected $array;
+	protected $root;
+	function __construct($element = null, $name = null, $type = null,$label=null) {
 		$this->element = $element;
+		$this->name = $name;
+		$this->type = $type;
+		$this->label=$label;
 	}
 	
 	/* 表单元素属性 */
-	function addAttr($key, $value) {
+	function __set($key, $value) {
+		if ($key == 'class') {
+			$this->attr ['class'] = empty ( $this->attr ['class'] ) ? $value : $this->attr ['class'] . ' ' . $value;
+		}
 		$this->attr [$key] = $value;
 	}
-	
-	/* 表单元素保存值 */
+	function setElement($element, $name, $type = null) {
+		$this->element = $element;
+		$this->name = $name;
+		$this->type = $type;
+	}
+	function setLabel($label) {
+		$this->label = $label;
+	}
 	function setValue($value) {
 		$this->value = $value;
 	}
-	function setName($name) {
-		$this->name = $name;
+	function setArray(array $array) {
+		$this->array = $array;
 	}
-	function setLable($lable) {
-		$this->lable = $lable;
-	}
-	
-	/* 表彰元素备选项 */
-	function setOption(array $value, $iskey = false) {
-		$this->option ['value'] = $value;
-		$this->option ['iskey'] = $iskey;
+	function setRoot($root='root'){
+		$this->root=$root;
 	}
 	function format() {
+		$div = null;
+		$lable = null;
+		if ($this->label) {
+			$lable = $this->label ()->format ();
+		}
 		$method = "get$this->element";
-		if ($this->lable || ! $this->name) {
-			$this->name = $this->lable;
-		}
-		if ($this->name || ! $this->lable) {
-			$this->lable = $this->name;
-		}
-		$html = $this->$method ();
-		if ($this->lable) {
-			$span = new Html ( 'span' );
-			$lable = new Html ( 'lable' );
-			$lable->add ( Lang::to ( $this->lable ) );
-			$span->add ( $lable );
-			$span->add ( $html );
-			return $span->format ();
-		}
-		return $html->format ();
-	}
-	
-	/* input */
-	protected function getInput() {
+		$div = $this->$method ();
 		$html = null;
-		if (! empty ( $this->attr ['type'] ) && ($this->attr ['type'] == 'checkbox' || $this->attr ['type'] == 'radio')) {
-			$html = new Html ( 'ul' );
-			$ul->class = $this->element;
-			foreach ( $this->option ['value'] as $key => $value ) {
-				$li = new Html ( 'li' );
-				$element = $this->forElement ();
-				if ($this->option ['iskey']) {
-					$element->value = $value;
-				} else {
-					$element->value = $key;
-				}
-				$element->name = $this->name . '[]';
-				if ($key == $this->value) {
-					$element->checked = 'checked';
-				}
-				$li->add ( $element );
-				$li->add ( $value );
-				$ul->add ( $li );
+		if (is_array ( $div )) {
+			foreach ( $div as $value ) {
+				$html .= $value->format ();
 			}
 		} else {
-			$html = $this->forElement ();
-			$html->value = $this->value;
-			$html->name = $this->name;
+			$html = $div->format ();
 		}
-		return $html;
+		return $lable . $html;
+	}
+	protected function label() {
+		$label = new Html ( 'label' );
+		$label->add ( Lang::to ( $this->label ) );
+		return $label;
+	}
+	/* input */
+	protected function getInput() {
+		if ($this->type == 'radio'){
+			if(!$this->array){
+				$this->array=array('no','yse');
+			}
+			return $this->otherInput ();
+		}
+		if($this->type == 'checkbox') {
+			return $this->otherInput ();
+		}
+		if (! $this->type) {
+			$this->type = 'text';
+		}
+		$input = $this->getElement ();
+		if ($this->value) {
+			$input->value = $this->value;
+		}
+		return $input;
+	}
+	protected function otherInput() {
+		if (! $this->array) {
+			return;
+		}
+		$this->name = $this->name . '[]';
+		$spans = null;
+		foreach ( $this->array as $key => $value ) {
+			$array = null;
+			if (! is_array ( $value )) {
+				$array ['id'] = $key;
+				$array ['name'] = $value;
+			} else {
+				$array = $value;
+			}
+			$span = new Html ( 'span' );
+			$input = $this->getElement ();
+			$input->value = $value ['id'];
+			if ($this->value == $array ['id']) {
+				$input->checked = 'checked';
+			}
+			$span->add ( $input );
+			$span->add ( Lang::to ( $array ['name'] ) );
+			$spans [] = $span;
+		}
+		return $spans;
 	}
 	
 	/* select */
 	protected function getSelect() {
-		$select = $this->forElement ();
-		$select->name = $this->name;
-		foreach ( $this->option ['value'] as $key => $value ) {
-			$option = new Html ( 'option' );
-			if ($this->option ['iskey']) {
-				$option->value = $value;
-			} else {
-				$option->value = $key;
+		$select = $this->getElement ();
+		if($this->root){
+			$select->add($this->root());
+		}
+		if ($this->array) {
+			foreach ( $this->array as $key => $value ) {
+				$array = null;
+				$prefix=null;
+				if (! is_array ( $value )) {
+					$array ['id'] = $key;
+					$array ['name'] = $value;
+				} else {
+					$array = $value;
+				}
+				if(!empty($array['level'])){
+					$prefix=str_repeat('--', substr_count($array['level'],'.'));
+				}
+				$option = new Html ( 'option' );
+				$option->value = $array ['id'];
+				if ($array ['id'] = $this->value) {
+					$option->selected = 'selected';
+				}
+				$option->add($prefix);
+				$option->add ( Lang::to ( $array ['name'] ) );
+				$select->add ( $option );
 			}
-			$option->add ( $value );
-			if ($key == $this->value) {
-				$option->seleted = 'seleted';
-			}
-			$select->add ( $option );
 		}
 		return $select;
 	}
 	
 	/* button */
 	protected function getButton() {
-		$button = $this->forElement ();
-		$button->add ( $this->value );
+		$button = $this->getElement ();
+		if (! $this->value) {
+			$this->value = $this->type;
+		}
+		$button->add ( Lang::to ( $this->value ) );
 		return $button;
 	}
 	
 	/* textarea */
 	protected function getTextarea() {
-		$Textarea = $this->forElement ();
-		$Textarea->name = $this->name;
+		$Textarea = $this->getElement ();
 		$Textarea->add ( $this->value );
 		return $Textarea;
 	}
-	protected function forElement() {
+	protected function getRole(){
+		$this->element='select';
+		$this->name='role';
+		$this->array=Admin_Db_Role::getAll();
+		$role=$this->getSelect();
+		return $role;
+	}
+	protected function getElement() {
 		$element = new Html ( $this->element );
+		if ($this->name) {
+			$element->name = $this->name;
+		}
+		if ($this->type) {
+			$element->type = $this->type;
+		}
 		if ($this->attr) {
 			foreach ( $this->attr as $key => $value ) {
 				$element->$key = $value;
 			}
 		}
 		return $element;
+	}
+	
+	protected function root(){
+		$option = new Html ( 'option' );
+		$option->value = 0;
+		$option->add ( Lang::to ( 'root' ) );
+		return $option;
 	}
 }

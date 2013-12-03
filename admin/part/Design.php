@@ -1,36 +1,46 @@
 <?php
-class Admin_Part_Design extends Part{
-	
-	protected function init(){
-		$this->style='page';
+class Admin_Part_Design extends Part {
+	protected function init() {
+		$this->style = 'view';
 	}
-	
-	protected function getHtml(){
+	protected function getHtml() {
 		
-		$tabs=array("page","layout","unit");
-		$planes=array();
-		$planes[]=$this->forPage();
-		$planes[]=$this->forLayout();
-		$planes[]=$this->forUnit();
+		$tabs =  array (
+				'view',
+				'menu',
+				'unit',
+				'show',
+				'layout'
+		);
+		$layoutes = array ();
+		foreach ($tabs as $value){
+			$layoutes [] = $this->$value ();
+		}
 		
-		$tab=new Part_Tab();
-		$tab->setTab($tabs);
-		$tab->setArray($planes);
-		$this->html->add($tab);
+		$tab = new Part_Tab ();
+		$tab->setTab ( $tabs );
+		$tab->setArray ( $layoutes );
+		$this->html->add ( $tab );
 	}
-	
-	protected function forPage(){
-		$page=new Admin_Part_Page();
-		return $page->format();
+	protected function view() {
+		$page = new Admin_Part_view ();
+		return $page->format ();
 	}
-	
-	protected function forLayout(){
-		$layout=new Admin_Part_Layout();
-		return $layout->format();
+	protected function layout() {
+		$view = new Admin_Part_layout ();
+		return $view->format ();
 	}
-	
-	protected function forUnit(){
-		
+	protected function menu() {
+		$page = new Admin_Part_Menu ();
+		return $page->format ();
+	}
+	protected function unit() {
+		$view = new Admin_Part_Unit ();
+		return $view->format ();
+	}
+	protected function show() {
+		$show = new Admin_Part_Show ();
+		return $show->format ();
 	}
 	
 }
