@@ -8,7 +8,7 @@ class Part_Logout extends Part{
 	
 	protected function getHtml(){
 		$a=new Html('a');
-		$a->add(Lang::to('logout',$this->unit['name']));
+		$a->add($this->lang('logout',$this->unit['name']));
 		$this->html->add($a);
 	}
 }

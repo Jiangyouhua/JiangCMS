@@ -22,7 +22,7 @@ class Part_Navbar extends Part {
 		if ($this->index) {
 			$li = new Html ( 'li' );
 			$a = new Html ( 'a' );
-			$a->add ( Lang::to ( 'index' ) );
+			$a->add ( $this->lang ( 'index' ) );
 			$a->href = ROOT;
 			$li->add ( $a );
 			$ul [0]->add ( $li );
@@ -49,7 +49,7 @@ class Part_Navbar extends Part {
 			$a = new Html ( 'a' );
 			$a->href = $this->forHref ( $value ['id'], $value ['href'] );
 			$li->add ( $a );
-			$a->add ( Lang::to ( $value ['name'], $this->unit ['name'] ) );
+			$a->add ( $this->lang ( $value ['name']));
 		}
 	}
 	protected function forHref($id, $href = null) {

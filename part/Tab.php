@@ -40,7 +40,7 @@ class Part_Tab extends Part{
 			}
 			$a->href="#tab_{$array ['id']}";
 			$a->class="tab_item";
-			$a->add(Lang::to($array['name']));
+			$a->add($this->lang($array['name']));
 			$li->add($a);
 			$ul->add($li);
 		}

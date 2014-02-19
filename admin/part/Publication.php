@@ -6,8 +6,8 @@ class Admin_Part_Publication extends Part {
 	protected function getHtml() {
 		
 		$tabs =  array (
-				'classify',
 				'content',
+				'classify'
 		);
 		$layoutes = array ();
 		foreach ($tabs as $value){
@@ -20,11 +20,11 @@ class Admin_Part_Publication extends Part {
 		$this->html->add ( $tab );
 	}
 	protected function classify() {
-		$page = new Admin_Part_Classify ();
+		$page = new Admin_Part_Publication_Classify ();
 		return $page->format ();
 	}
 	protected function content() {
-		$view = new Admin_Part_content ();
+		$view = new Admin_Part_Publication_content ();
 		return $view->format ();
 	}	
 }

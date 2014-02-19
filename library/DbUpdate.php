@@ -25,7 +25,11 @@ class DbUpdate extends Db {
 	}
 
 	protected function format(){
-		return "UPDATE $this->table SET $this->data WHERE $this->where";
+		$where=null;
+		if($this->where){
+			$where="WHERE $this->where";
+		}
+		return "UPDATE $this->table SET $this->data $where";
 	}
 }
 ?>

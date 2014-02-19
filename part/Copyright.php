@@ -4,6 +4,6 @@ class Part_Copyright extends Part{
 		$this->html=new Html("span");
 	}
 	protected function getHtml(){
-		$this->html->add(Lang::to('copyright'));
+		$this->html->add($this->lang('copyright'));
 	}
 }

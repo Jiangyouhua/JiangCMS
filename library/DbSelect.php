@@ -6,30 +6,52 @@ class DbSelect extends Db {
 	protected $where; // select操作order的内容
 	protected $order; // select操作limit的内容
 	protected $limit;
-	function setSelect($column) {
+	
+	/*查询的列*/
+function setSelect($column) {
 		if (is_array ( $column )) {
-			$this->select = implode ( ",", $column );
+			/*多表查询时，按表分组*/
+			$array=null;
+			foreach ($column as $key=>$value){
+				if(is_int($key)){
+					$array=$column;
+					break ;
+				}
+				$var=array();
+				if(is_string($value)){
+					$var=explode(',', $value);
+				}else{
+					$var=$value;
+				}
+				if(is_array($value)){
+					$array[]="$this->prefix$key.".implode(",$this->prefix$key.", $value);
+				}
+			}
+			$this->select = implode(',', $array) ;
 		} else {
 			$this->select = $column;
 		}
 	}
-	function setJoin($table, $type = 'LEFT') {
+	/*联接查询*/
+	function setJoin($table, $on, $type = 'LEFT') {
 		$this->prefix = null;
 		if (! empty ( Admin_Config_Sql::$prefix )) {
 			$this->prefix = Admin_Config_Sql::$prefix . "_";
 		}
-		$this->join ['table'] [] = "`$this->prefix$table`";
-		$this->join ['type'] [] = $type;
+		$join ['table'] = "`$this->prefix$table`";
+		$join ['on']=$on;
+		$join ['type'] = $type;
+		$this->join[]=$join;
 	}
-	function setOn($on) {
-		$this->on [] = $on;
-	}
+	/*条件*/
 	function setWhere($where) {
 		$this->where = $where;
 	}
+	/*排序*/
 	function setOrder($order) {
 		$this->order = $order;
 	}
+	/*分段*/
 	function setLimit($limit) {
 		$this->limit = $limit;
 	}
@@ -43,12 +65,8 @@ class DbSelect extends Db {
 		$select = empty ( $this->select ) ? "SELECT *" : "SELECT $this->select";
 		$join = null;
 		if (! empty ( $this->join )) {
-			$count = count ( $this->join );
-			for($i = 0; $i < $count; $i ++) {
-				$join .= "{$this->join['type'][$i]} JOIN {$this->join['table'][$i]}";
-				if (! empty ( $this->on )) {
-					$join .= " ON {$this->on[$i]} ";
-				}
+			foreach ($this->join as $value) {
+				$join .= " {$value['type']} JOIN {$value['table']} ON {$value['on']} ";
 			}
 		}
 		$where = empty ( $this->where ) ? null : "WHERE $this->where";

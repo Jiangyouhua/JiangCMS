@@ -6,15 +6,20 @@ body {
 	font: .8em \5FAE\8F6F\96C5\9ED1, Arial, Helvetica, sans-serif;
 }
 
-.select{
-	background:#ff0;
+.adminLogin{
+	display: -moz-inline-box;
+	display: inline-block;
+	width:600px;
+}
+
+.select {
+	background: #ff0;
 }
 
 .span_left {
 	display: -moz-inline-box;
 	display: inline-block;
 	width: 30%;
-	display: inline-block;
 }
 
 .span_right {
@@ -24,10 +29,45 @@ body {
 	width: 69%;
 	padding-left: 1%;
 }
+.span_center{
+	text-align:center;
+}
 
-.list li {
+.list table {
+	width: 100%;
+	border-collapse:collapse;
+	font-size: 1em;
+	border-bottom: 1px solid #888;
+}
+
+.list td {
 	border-bottom: 1px dotted #888;
-	line-height: 2.5em;
+}
+td.li,td.status{
+	text-align: center;
+}
+td.li,th.li {
+	width: 2em;
+}
+
+td.edit,th.edit,th.level,td.level{
+	width: 5em;
+}
+th.status,td.status{
+	width: 3.5em;
+}
+td.edit,td.name,td.level{
+	padding-left: .5em;
+}
+.list td{
+	line-height:2.5em;
+}
+.list th{
+	background-color: #ddd;
+	border-bottom: 1px solid #888;
+	border-left: 1px solid #fff;
+	color:#152F35;
+	line-height:1.5em;
 }
 
 /*文字标志*/
@@ -41,19 +81,6 @@ body {
 	-webkit-transition: all .2s linear;
 	-moz-transition: all .2s linear;
 	transition: all .2s linear;
-}
-
-.plane {
-	display: block;
-	border-bottom: 1px solid #333;
-	border-left: 1px solid #333;
-	border-right: 1px solid #333;
-	border-radius: 0 0 5px 5px;
-	border-bottom: 1px solid #333;
-	border-left: 1px solid #333;
-	border-right: 1px solid #333;
-	border-radius: 0 0 5px 5px;
-	padding: 1% 3%;
 }
 
 .back {
@@ -79,36 +106,17 @@ body {
 	border-bottom: 1px solid #888;
 	line-height: 50px;
 	font-weight: bold;
-}
-.caption{
-	font-weight: bold;
-	color:#1C7C91;
-}
-.edit {
-	text-align: center;
-	padding: .5em;
-}
-span.edit{
-	display: inline-block;
-	width:60px;
-}
-span.name{
-	display: inline-block;
-	width:30%;
-}
-span.status{
-	display: inline-block;
-	float:right;
-	width:50px;
-	text-align: center;
-}
-form .edit {
-	background: #eee;
-	border-radius: 5px;
-	margin-top:1em;
-	margin-bottom:1em;
+	text-align:left;
 }
 
+form .edit {
+	padding: .5em;
+	text-align: center;
+	background: #eee;
+	border-radius: 5px;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
 
 .edit a {
 	display: inline-block;
@@ -150,7 +158,7 @@ form .edit {
 }
 
 .span {
-	margin:1% 3%;
+	margin: .5em 3%;
 }
 
 .span1 {
@@ -201,8 +209,8 @@ form .edit {
 	width: 98%;
 }
 
-.span0{
-	width:100%;
+.span0 {
+	width: 100%;
 }
 
 .right {
@@ -303,30 +311,38 @@ form .edit {
 }
 
 /*tab*/
+.tab{
+	min-height: 400px;
+	border-radius:5px;
+	border:1px solid #000;
+}
 .tabs {
 	margin: 0;
 	background: #eee url(images/ui-bg_dots-small_35_35414f_2x2.png) repeat;
-	padding: 15px 0 5px 5px;
-	border-radius: 5px 5px 0 0;
-	border-top: 1px solid #000;
-	border-left: 1px solid #000;
-	border-rigth: 1px solid #000;
+	padding: 15px 0 0 5px;
 	border-bottom: 3px solid #db4865;
 }
+
+.plane {
+	padding: 1% 3%;
+}
+
 
 .tabs li {
 	display: inline;
 }
 
 .tabs a {
-	margin: 1px;
+	display: inline-block;
+	width:10em;
+	line-height:2.5em;
 	border-radius: 5px 5px 0 0;
 	border-top: 1px solid #333;
 	border-left: 1px solid #333;
 	border-right: 1px solid #333;
-	padding: 5px 25px;
 	color: #000;
 	text-decoration: none;
+	text-align: center;
 }
 
 .tabs a:link {
@@ -365,7 +381,7 @@ form li {
 	margin: 5px 0;
 }
 
-label {
+.label {
 	display: -moz-inline-box;
 	display: inline-block;
 	width: 30%;
@@ -375,6 +391,8 @@ label {
 
 .tool label {
 	width: 100%;
+	display: -moz-inline-box;
+	display: inline-block;
 	text-align: center;
 	background: #eee;
 	line-height: 2.5em;
@@ -383,28 +401,52 @@ label {
 	border-radius: 5px;
 }
 
-input[type='text'],input[type='password'],button,select {
-	border-radius: 5px;
-	border: 1px solid #333;
-	margin-right:1%;
-	margin-left:1%;
+.foot{
+	border-top: 1px solid #333;
 }
 
-input[type='text'],input[type='password'],select {
+input[type='text'],input[type='password'],button,select,textarea {
+	border-radius: 5px;
+	border: 1px solid #333;
+	margin-right: 1%;
+	margin-left: 1%;
+}
+
+input[type='text'],input[type='password'],input[type='file'],select,textarea
+	{
 	padding: 3px;
 	width: 49%;
 }
+.captcha{
+	display: -moz-inline-box;
+	display: inline-block;
+	padding:3px;
+	width:100%;
+	text-align: center;
+}
+.captcha input{
+	margin-top:1em;
+}
 
-button,.title button{
+.tool input[type='text'],.tool input[type='password'] {
+	padding: 3px;
+	width: 98%;
+}
+
+button,.title button {
 	padding: 3px 0;
-	width: 35%;
-	margin-right:1%;
-	margin-left:1%;
+	width: 7em;
+	margin-right: 1%;
+	margin-left: 1%;
+}
+
+textarea {
+	height: 10em;
 }
 
 .title button {
 	position: relative;
-	height:2em;
+	height: 2em;
 	top: 12px;
 }
 
@@ -412,10 +454,19 @@ button,.title button{
 	width: 47.5%;
 }
 
-[disabled='disabled']{
-	background-color:#eee;
+div#editor,input[type='file']#file {
+	width: 100%;
+}
+
+.Login{
+	line-height: 3em;
+	
+}
+
+[disabled='disabled'] {
+	background-color: #eee;
 	border-color: #aaa;
-	color:#888;
+	color: #888;
 }
 
 /* Bootstrap v2.3.2 icon*/

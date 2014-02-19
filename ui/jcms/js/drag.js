@@ -4,6 +4,8 @@ $(function() {
 	var it;
 	var key = null;
 	var y = null;
+	/*加载编辑器*/
+	var editor = UM.getEditor('editor');;
 
 	/* 禁止选择 */
 	$(document).bind("selectstart", function() {

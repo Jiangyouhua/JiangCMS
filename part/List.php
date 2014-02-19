@@ -9,6 +9,8 @@ class Part_List extends Part {
 	protected $prefix;
 	protected $check;
 	protected $caption;
+	protected $key;
+	
 	protected function init() {
 		$this->edit = array (
 				"open" => false,
@@ -27,6 +29,7 @@ class Part_List extends Part {
 		);
 		$this->style = 'list';
 		$this->caption = true;
+		$this->key='default';
 	}
 	function setHandle($handle) {
 		$this->handle = $handle;
@@ -45,6 +48,9 @@ class Part_List extends Part {
 	function setColumn(array $column) {
 		$this->column = $column;
 	}
+	function setKey($key){
+		$this->key=$key;
+	}
 	function noCaption() {
 		$this->caption = false;
 	}
@@ -62,7 +68,7 @@ class Part_List extends Part {
 			parent::getHtml ();
 			return;
 		}
-		$ul = new Html ( 'ol' );
+		$table = new Html ( 'table' );
 		$array = null;
 		foreach ( $this->array as $key => $value ) {
 			if (! is_array ( $value )) {
@@ -72,69 +78,93 @@ class Part_List extends Part {
 				$array = $value;
 				$id = empty ( $value ['id'] ) ? $key : $value ['id'];
 			}
-			$li = new Html ( 'li' );
-			$ul->add ( $li );
-			$li->id = "li$id";
+			if($key==0){
+				$this->caption ($table, $array );
+			}
+			$tr = new Html ( 'tr' );
+			$table->add ( $tr );
+			$tr->id = "li$id";
+			$td=new Html('td');
+			$td->class='li';
+			$td->add($key);
+			$tr->add($td);
 			/* edit */
 			$metadata = empty ( $array ['metadata'] ) ? null : $array ['metadata'];
-			$li->add ( $this->edit ( $id, $array ['name'], $metadata ) );
-			$this->element ( $li, $array, $value );
+			$tr->add ( $this->edit ( $id, $array ['name'], $metadata ) );
+			$this->element ( $tr, $array, $value );
 		}
-		if ($this->caption) {
-			$this->caption (  $array  );
-		}
-		$this->html->add ( $ul );
+		$this->html->add ( $table );
 	}
-	protected function caption($array) {
-		$ul = new Html ( 'ul' );
-		$ul->class='caption';
-		$li = new Html ( 'li' );
-		$ul->add ( $li );
+	protected function caption($table,$array) {
+		$tr = new Html ( 'tr' );
+
 		/* edit */
-		$span = new Html ( 'span' );
-		$span->class = 'edit';
-		$span->add ( Lang::to ( 'edit' ) );
-		$li->add ( $span );
+		$edit=false;
+		$th = new Html ( 'th' );
+		$th->class = 'li';
+		$th->add ( $this->lang ( 'li' ) );
+		$tr->add ( $th );
+		foreach ($this->edit as $value){
+			if($value){
+				$edit=true;
+			}
+		}
+		if($edit){
+			$th = new Html ( 'th' );
+			$th->class = 'edit';
+			$th->add ( $this->lang ( 'edit' ) );
+			$tr->add ( $th );
+		}
 		
 		foreach ( $array as $key => $value ) {
-			if(!in_array ( $key, $this->column )){
+			if (! in_array ( $key, $this->column )) {
 				continue;
 			}
-			$span = new Html ( 'span' );
-			$span->class = $key;
-			$span->add ( Lang::to ( $key ) );
-			$li->add ( $span );
+			$th = new Html ( 'th' );
+			$th->class = $key;
+			$th->add ( $this->lang ( $key ) );
+			$tr->add ( $th );
 		}
-		$this->html->add ( $ul );
+		$table->add ( $tr );
 	}
-	protected function element($li, $array, $value) {
+	protected function element($tr, $array, $value) {
 		foreach ( $array as $k => $v ) {
-			$span = new Html ( 'span' );
-			$span->class = $k;
+			$td = new Html ( 'td' );
+			$td->class = $k;
 			if ($k == 'name') {
 				$prefix = null;
 				if (! empty ( $value ['level'] )) {
 					$prefix = $this->prefix ( $value ['level'] );
 				}
 				$check = $this->check ( $value ['id'] );
-				$span->add ( $prefix );
-				$span->add ( $check );
+				$td->add ( $prefix );
+				$td->add ( $check );
 			}
-			if($k=='status'){
-				$v='x';
-				if($v){
-					$v='√';
+			$input=$this->hideInput($k, $v);
+			if ($k == 'status') {
+				if ($v) {
+					$v = '√';
+				}else{
+					$v = 'x';
 				}
 			}
 			if (! in_array ( $k, $this->column )) {
-				$span->class = 'hidden';
+				$td->class = 'hidden';
 			}
-			$span->add ( $v );
-			$li->add ( $span );
+			$td->add ( $v );
+			$td->add($input);
+			$tr->add ( $td );
 		}
 	}
+	protected function hideInput($name,$value){
+		$input=new Html('input');
+		$input->type='hidden';
+		$input->name=$name;
+		$input->value=$value;
+		return $input;
+	}
 	protected function edit($id, $name, $metadata = null) {
-		$b = null;
+		$td=null;
 		foreach ( $this->edit as $key => $value ) {
 			if (! $value) {
 				continue;
@@ -149,13 +179,16 @@ class Part_List extends Part {
 				$onclick = "edit_delete($id,'$this->handle','$this->model','$this->function')";
 			}
 			if ($key == 'modify') {
-				$onclick = "edit_$key($id,'$name')";
+				$onclick = "edit_$key($id,'$name','$this->key',this)";
 			}
 			
 			if (! $onclick) {
 				continue;
 			}
-			
+			if(!$td){
+				$td=new Html('td');
+				$td->class='edit';
+			}
 			$a = new Html ( 'a' );
 			$span = new Html ( 'span' );
 			$span->class = "icon-" . $this->icon [$key];
@@ -163,16 +196,9 @@ class Part_List extends Part {
 			$a->onclick = $onclick;
 			$a->class = "edit_$key";
 			$a->add ( $span );
-			$b [] = $a;
-			
-			if ($b) {
-				$span = new Html ( 'span' );
-				$span->class = 'edit';
-				$span->add ( $b );
-				return $span;
-			}
-			return;
+			$td->add($a);
 		}
+		return $td;
 	}
 	protected function prefix($level) {
 		if ($this->prefix) {

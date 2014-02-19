@@ -1,8 +1,6 @@
 <?php
-class Admin_Db_Content {
-	static function getAll() {
-		return self::select (  );
-	}
+class Admin_Db_Content extends DbMode{
+	static protected $table='content';
 	static function getOther() {
 		$where = "classification='0'";
 		return self::select ( $where );
@@ -11,13 +9,14 @@ class Admin_Db_Content {
 		$where = "FIND_IN_SET('$id',classification)";
 		return self::select ( $where );
 	}
-	static function getIt($id) {
-		$where = "id=$id";
-		return self::select ( $where );
-	}
-	static protected function select($where=null) {
-		$db = new DbSelect ( 'content' );
-		$db->setWhere ( $where );
-		return $db->fetchAll ();
+	static function formSelect($key = 'other') {
+		$method = "get$key";
+		$re = self::$method ();
+		$form = new Form ( 'select', 'content', 0, 'content' );
+		if ($re) {
+			$form->setArray ( $re );
+		}
+		$form->multiple = 'multiple';
+		return $form;
 	}
 }

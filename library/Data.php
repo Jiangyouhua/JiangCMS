@@ -1,88 +1,72 @@
 <?php
 class Data {
-	protected $name;
-	protected $part;
-	protected $layout;
 	protected $unit;
-	function __construct($name = null, $part = null, $layout = null) {
-		$this->name = $name;
-		$this->part = $part;
-		$this->layout = $layout;
-	}
-	function setName($name) {
-		$this->name = $name;
-	}
-	function setPart($part) {
-		$this->part = $part;
-	}
-	function setLayout($layout) {
-		$this->layout = $layout;
-	}
-	protected function role() {
-		return true;
+	function __construct($unit) {
+		$this->unit = $unit;
 	}
 	protected function menu() {
+		/* unit['menu']为假表示始终呈现 */
+		if (! $this->unit ['menu']) {
+			return true;
+		}
+		$array = explode ( ',', $this->unit ['menu'] );
 		$menu = empty ( $_GET ['menu'] ) ? 0 : $_GET ['menu'];
-		return "(FIND_IN_SET($menu,menu) OR menu='0')";
+		if (in_array ( $menu, $array )) {
+			return true;
+		}
+		$re = Admin_Db_Classification::getSub ( $menu );
+		foreach ( $re as $value ) {
+			if (in_array ( $value ['id'], $array )) {
+				return true;
+			}
+		}
+		return false;
 	}
 	protected function item() {
-		$item = empty ( $_GET ['item'] ) ? 0 : 1;
-		return "(item = $item OR item = 2)";
-	}
-	function getUnit($menu = false, $item = false) {
-		if (! $this->unit) {
-			$db = new DbSelect ('unit');
-			$where =null;
-			if ($this->name) {
-				$where [] = "name='$this->name'";
-			}
-			if ($this->part) {
-				$where [] = "part='$this->part'";
-			}
-			if ($this->layout) {
-				$where [] = "layout=$this->layout";
-			}
-			if ($menu) {
-				$where [] = $this->menu ();
-			}
-			if ($item) {
-				$where [] = $this->item ();
-			}
-			$where [] = $this->role ();
-			$db->setWhere ( implode ( " AND ", $where ) );
-			$this->unit [0] = $db->fetchAll ();
-			$this->unit [1] = true;
+		if ($this->unit ['item'] == 2) {
+			return true;
 		}
-		return $this->unit [0];
+		$item = empty ( $_GET ['item'] ) ? 0 : 1;
+		return "$this->unit['item'] ==$item ";
 	}
 	function get($menu = false, $item = false) {
 		if (! $this->unit) {
-			$this->getUnit ( $menu, $item );
+			return null;
 		}
-		
-		if (empty ( $this->unit [0] )) {
+		if(!Role::unit($this->unit['role'])){
+			return null;
+		}
+		/*是否匹配当前url*/
+		if($item && !$this->item()){
+			return null;
+		}
+		if($menu && !$this->menu()){
 			return null;
 		}
 		
-		$array = null;
-		foreach ( $this->unit [0] as $key=> $re ) {
-			
-			/* 1. 通过ID指定了具体内容 */
-			$id = $re ['content'];
-			if ($re ['isurl'] && ! empty ( $_GET ['id'] )) {
-				$id = $_GET ['id'];
+		$array = true;
+		$re = $this->unit;
+		/* 1. 通过ID指定了具体内容 */
+		$id = $re ['content'];
+		if ($re ['isurl'] && ! empty ( $_GET ['id'] )) {
+			$id = $_GET ['id'];
+		}
+		if ($id) {
+			$re  = $this->get4Id ( $ids );
+			if($re){
+				$array=$re;
 			}
-			if ($id) {
-				$array[$key]=$this->get4Id ( $ids );
-			}
-			
-			/*2.通过分类指定具体内容*/
-			$menu=$re ['classification'];
-			if ($re ['isurl'] && ! empty ( $_GET ['menu'] )) {
-				$menu = $_GET ['menu'];
-			}
-			if ($menu) {
-				$array[$key]=$this->get4Menu($menu,$re['part']);
+		}
+		
+		/* 2.通过分类指定具体内容 */
+		$menu = $re ['classification'];
+		if ($re ['isurl'] && ! empty ( $_GET ['menu'] )) {
+			$menu = $_GET ['menu'];
+		}
+		if ($menu) {
+			$re = $this->get4Menu ( $menu, $re ['part'] );
+			if($re){
+				$array=$re;
 			}
 		}
 		return $array;
@@ -92,25 +76,25 @@ class Data {
 		$db->setWhere ( "id IN ($id) AND status = 1" );
 		return $db->fetchAll ();
 	}
-	protected function get4Menu($menu,$part){
+	protected function get4Menu($menu, $part) {
 		/* 2. 从分类表读取导航、菜单数据 */
 		if (strtolower ( $part ) == 'menu' || strtolower ( $part ) == 'navbar') {
 			$db = new DbSelect ();
-			$sql = "SELECT @item:=item, @level:=level From " . db::table ( 'classification' ) . " where id=$menu and status = 1";
+			$sql = "SELECT @level:=level From " . db::table ( 'classification' ) . " where id=$menu and status = 1";
 			$db->addSql ( $sql );
-			$sql = "SELECT * From " . db::table ( 'classification' ) . " where (item=@item OR item=1) AND level LIKE CONCAT(@level,'.%') AND id<>$menu AND status = 1 ORDER BY level";
+			$sql = "SELECT * From " . db::table ( 'classification' ) . " where  level LIKE CONCAT(@level,'.%') AND id<>$menu AND status = 1 ORDER BY level";
 			$db->addSql ( $sql );
 			return $db->fetchAll ();
 		}
-			
+		
 		/* 3. 读取所属内容 */
 		$db = new DbSelect ();
-		$sql = "SELECT @item:=item, @level:=level From " . db::table ( 'classification' ) . " where id=$menu and status = 1";
+		$sql = "SELECT @level:=level From " . db::table ( 'classification' ) . " where id=$menu and status = 1";
 		$db->addSql ( $sql );
 		$sql = "SELECT * FROM " . db::table ( 'content' ) . " Where classification IN (
-		SELECT classification From " . db::table ( 'classification' ) . " where (item=@item OR item=1) AND level LIKE CONCAT(@level,'.%') AND id<>$menu AND status = 1)
+		SELECT classification From " . db::table ( 'classification' ) . " where level LIKE CONCAT(@level,'.%') AND id<>$menu AND status = 1)
 				AND status = 1";
-				$db->addSql ( $sql );
-				return $db->fetchAll ();
+		$db->addSql ( $sql );
+		return $db->fetchAll ();
 	}
 }

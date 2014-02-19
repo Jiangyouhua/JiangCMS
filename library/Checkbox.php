@@ -24,7 +24,7 @@ class Part_Checkbox extends Part{
 			$input->type="checkbox";
 			$input->value=$value['id'];
 			$li->add($input);
-			$li->add($prefix.$this->language->to($value['name']));
+			$li->add($prefix.$this->lang($value['name']));
 		}
 	}
 }

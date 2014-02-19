@@ -1,5 +1,5 @@
 <?php
-include ("../autoload.php");
+include ("../library/Include.php");
 if (! $_POST) {
 	header ( '' );
 }
@@ -12,18 +12,4 @@ if (empty ( $_REQUEST ['jcms_function'] )) {
 	$function=$_REQUEST ['jcms_function'];
 	$model->$function();
 }
-$back = $model->back ();
-
-switch ($back) {
-	case 1 :
-		echo 1;
-		break;
-	case 2 :
-		echo 2;
-		break;
-	default :
-		echo $back;
-		break;
-}
-
-
+$model->back ();

@@ -5,7 +5,7 @@
  * 3.实现数据库表操作
  * 4.实现多条SQL语句操作数据表
  * */
-abstract class DB {
+abstract class Db {
 	protected $sql;
 	protected $table;
 	protected $query;

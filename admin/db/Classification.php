@@ -1,39 +1,36 @@
 <?php
-class Admin_Db_Classification {
-	static protected $metadata="metadata<2";
-	static function getAll() {
-		$where = self::$metadata;
-		return self::select ( $where );
-	}
+class Admin_Db_Classification extends DbMode {
+	protected static $table = 'classification';
+	protected static $order = 'level';
 	static function getTop() {
-		$where = self::$metadata.' AND item=0';
-		return self::select ( $where );
+		$where = "metadata<2 AND level NOT LIKE '%.%'";
+		$order = 'level';
+		return self::select ( $where,0,0,$order );
 	}
 	static function getSub($id) {
-		$where = self::$metadata." AND item=$id";
-		return self::select ( $where );
+		$where = "metadata<2 AND level LIKE '$id.%'";
+		$order = 'level';
+		return self::select ( $where,0,0,$order );
 	}
-	static function getIt($id) {
-		$where = "id=$id";
-		return self::select ( $where );
+	static function getSubLast($level){
+		$where = "metadata<2 AND level LIKE '$level.%'";
+		$order='level DESC';
+		return self::select ( $where,1,0,$order );
 	}
 	static function getMenu($id) {
 		$re = self::getIt ( $id );
 		if (! $re) {
 			return null;
 		}
-		$where="item=$id";
-		if ($item = $re ['item']) {
-			$level = $re ['level'] . '%';
-			$where = "item=$item AND level LIKE '$level'";
-		}
-		return self::select($where);
+		$where = "metadata<2 AND level LIKE '$level'";
+		$order = 'level';
+		return self::select ( $where,0,0,$order );
 	}
-	static protected function select($where = null) {
-		$db = new DbSelect ( 'classification' );
-		$order = 'item,level';
-		$db->setWhere ( $where );
-		$db->setOrder ( $order );
-		return $db->fetchAll ();
+	static function formSelect($where = 1, $a = 0, $column = null, $order = null, $limit = null, $join = null, $on = null) {
+		$re=self::select($where = 1, $a = 0, $column = null, $order = null, $limit = null, $join = null, $on = null);
+		$form=new Form(self::$table, 'select');
+		$form->setArray($re);
+		return $form;
 	}
+	
 }

@@ -6,13 +6,19 @@ class Form implements IFormat {
 	protected $label;
 	protected $attr;
 	protected $value;
+	protected $k;
+	protected $v;
 	protected $array;
+	protected $iskey;
 	protected $root;
-	function __construct($element = null, $name = null, $type = null,$label=null) {
-		$this->element = $element;
+	function __construct($name, $element, $type = null, $label = 1) {
 		$this->name = $name;
+		$this->element = $element;
 		$this->type = $type;
-		$this->label=$label;
+		$this->label = $label;
+		if ($label == 1) {
+			$this->label = $name;
+		}
 	}
 	
 	/* 表单元素属性 */
@@ -20,12 +26,10 @@ class Form implements IFormat {
 		if ($key == 'class') {
 			$this->attr ['class'] = empty ( $this->attr ['class'] ) ? $value : $this->attr ['class'] . ' ' . $value;
 		}
+		if($key=='multiple' && $value=='multiple'){
+			$this->name.='[]';
+		}
 		$this->attr [$key] = $value;
-	}
-	function setElement($element, $name, $type = null) {
-		$this->element = $element;
-		$this->name = $name;
-		$this->type = $type;
 	}
 	function setLabel($label) {
 		$this->label = $label;
@@ -33,11 +37,13 @@ class Form implements IFormat {
 	function setValue($value) {
 		$this->value = $value;
 	}
-	function setArray(array $array) {
+	function setArray(array $array, $k='id',$v='name') {
 		$this->array = $array;
+		$this->k = $k;
+		$this->v=$v;
 	}
-	function setRoot($root='root'){
-		$this->root=$root;
+	function setRoot($root = 'root') {
+		$this->root = $root;
 	}
 	function format() {
 		$div = null;
@@ -59,18 +65,23 @@ class Form implements IFormat {
 	}
 	protected function label() {
 		$label = new Html ( 'label' );
-		$label->add ( Lang::to ( $this->label ) );
+		$label->class = 'label';
+		$label->add ( $this->label );
 		return $label;
 	}
 	/* input */
 	protected function getInput() {
-		if ($this->type == 'radio'){
-			if(!$this->array){
-				$this->array=array('no','yse');
+		if ($this->type == 'radio') {
+			if (! $this->array) {
+				$this->array = array (
+						'no',
+						'yse' 
+				);
 			}
 			return $this->otherInput ();
 		}
-		if($this->type == 'checkbox') {
+		if ($this->type == 'checkbox') {
+			$this->name .= '[]';
 			return $this->otherInput ();
 		}
 		if (! $this->type) {
@@ -86,24 +97,17 @@ class Form implements IFormat {
 		if (! $this->array) {
 			return;
 		}
-		$this->name = $this->name . '[]';
 		$spans = null;
 		foreach ( $this->array as $key => $value ) {
-			$array = null;
-			if (! is_array ( $value )) {
-				$array ['id'] = $key;
-				$array ['name'] = $value;
-			} else {
-				$array = $value;
-			}
+			$array = $this->forValue ( $key, $value );
 			$span = new Html ( 'span' );
 			$input = $this->getElement ();
-			$input->value = $value ['id'];
-			if ($this->value == $array ['id']) {
-				$input->checked = 'checked';
-			}
+			$input->value = $value [$this->k];
 			$span->add ( $input );
-			$span->add ( Lang::to ( $array ['name'] ) );
+			if (!empty($array [$this->k])  && $this->value == $array [$this->k]) {
+				$input->checked = 'checked';
+				$span->add ( $array [$this->v] );
+			}
 			$spans [] = $span;
 		}
 		return $spans;
@@ -112,29 +116,23 @@ class Form implements IFormat {
 	/* select */
 	protected function getSelect() {
 		$select = $this->getElement ();
-		if($this->root){
-			$select->add($this->root());
+		if ($this->root) {
+			$select->add ( $this->root () );
 		}
 		if ($this->array) {
 			foreach ( $this->array as $key => $value ) {
-				$array = null;
-				$prefix=null;
-				if (! is_array ( $value )) {
-					$array ['id'] = $key;
-					$array ['name'] = $value;
-				} else {
-					$array = $value;
-				}
-				if(!empty($array['level'])){
-					$prefix=str_repeat('--', substr_count($array['level'],'.'));
+				$prefix = null;
+				$array = $this->forValue ( $key, $value );
+				if (! empty ( $array ['level'] )) {
+					$prefix = str_repeat ( '--', substr_count ( $array ['level'], '.' ) );
 				}
 				$option = new Html ( 'option' );
-				$option->value = $array ['id'];
-				if ($array ['id'] = $this->value) {
+				$option->value = $array [$this->k];
+				if ($array [$this->k] == $this->value) {
 					$option->selected = 'selected';
 				}
-				$option->add($prefix);
-				$option->add ( Lang::to ( $array ['name'] ) );
+				$option->add ( $prefix );
+				$option->add ( $array [$this->v] );
 				$select->add ( $option );
 			}
 		}
@@ -147,7 +145,7 @@ class Form implements IFormat {
 		if (! $this->value) {
 			$this->value = $this->type;
 		}
-		$button->add ( Lang::to ( $this->value ) );
+		$button->add ( $this->value );
 		return $button;
 	}
 	
@@ -157,12 +155,33 @@ class Form implements IFormat {
 		$Textarea->add ( $this->value );
 		return $Textarea;
 	}
-	protected function getRole(){
-		$this->element='select';
-		$this->name='role';
-		$this->array=Admin_Db_Role::getAll();
-		$role=$this->getSelect();
-		return $role;
+	protected function getEditor() {
+		$div = new Html ();
+		$div->id = "editor";
+		return $div;
+	}
+	protected function getFile() {
+		$this->element = 'input';
+		$this->type = 'file';
+		$file = $this->getInput ();
+		$file->id = 'file';
+		return $file;
+	}
+	protected function getCaptcha() {
+		$span = null;
+		$this->element = 'input';
+		$span [] = $this->getInput ();
+		$captcha = new Plug_Captcha_Captcha ();
+		$a = new Html ( 'a' );
+		$a->title = Lang::to ( 'captchainof' );
+		$a->class = 'captcha';
+		$a->href = '#';
+		$a->onclick = "new_captcha()";
+		$img = new Html ( 'img' );
+		$img->src = $captcha->CreateImage ();
+		$a->add ( $img );
+		$span [] = $a;
+		return $span;
 	}
 	protected function getElement() {
 		$element = new Html ( $this->element );
@@ -179,11 +198,20 @@ class Form implements IFormat {
 		}
 		return $element;
 	}
-	
-	protected function root(){
+	protected function forValue($key, $value) {
+		$array = null;
+		if (! is_array ( $value )) {
+			$array ['id'] = $key;
+			$array ['name'] = $value;
+		} else {
+			$array = $value;
+		}
+		return $array;
+	}
+	protected function root() {
 		$option = new Html ( 'option' );
 		$option->value = 0;
-		$option->add ( Lang::to ( 'root' ) );
+		$option->add ( 'root' );
 		return $option;
 	}
 }

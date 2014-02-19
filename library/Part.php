@@ -7,6 +7,7 @@ class Part implements IFormat {
 	protected $style;  //block style
 	protected $class;
 	protected $title;
+	protected $lang;
 	
 	function __construct() {
 		$this->init ();
@@ -48,12 +49,26 @@ class Part implements IFormat {
 	protected function getTitle(){
 		$div=new Html();
 		$div->class='title';
-		$div->add(Lang::to($this->title));
+		$div->add($this->lang($this->title));
 		$this->html->add($div);
 	}
 	
 	protected function getHtml() {
-		$this->html->add ( Lang::to ( get_class ( $this ) ) );
+		$this->html->add ( $this->lang ( get_class ( $this ) ) );
+	}
+	
+	function lang($key){
+		if(!$this->lang){
+			$name=get_class($this);
+			if(!empty($this->unit['name'])){
+				$name=$this->unit['name'];
+			}
+			$this->lang=Lang::to(0,$name);
+		}
+		if(empty($this->lang[$key])){
+			return $key;
+		}
+		return $this->lang[$key];
 	}
 	
 	function format() {

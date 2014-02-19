@@ -1,40 +1,32 @@
 <?php
 class Go {
-	static $layout;
-	static function to($name, $partname) {
-		$self = $_SERVER ['PHP_SELF'];
-		if (! self::$layout) {
-			$url = explode ( "/", strtolower ( $self ) );
-			$dir = explode ( '\\', strtolower ( DIR ) );
-			$layout = implode ( '/', array_diff ( $url, $dir, array (
-					null 
-			) ) );
-			/* 后台页面处理 */
-			if ($layout == 'admin/index.php') {
-				self::$layout = 0;
-			} else {
-				$arr = explode ( '.', $layout );
-				$re = Web::getLayout ( $arr [0] );
-				self::$layout = $re ['id'];
-			}
-		}
+	static function to($name) {
 		
-		$data = new Data ( $name, $partname, self::$layout );
+		/*获取*/
+		$re = Admin_Db_Unit::getByName($name);
+		if (! $re) {
+			return;
+		}
+		$name=self::part($re ['part']);
+		$part = Factory::getInstance ( $name );
+		if (! $part) {
+			return;
+		}
+		$data = new Data ( $re );
 		$array = $data->get ( 1, 1 );
-		$unit = $data->getUnit ( 1, 1 );
-		
-		if ($unit) {
-			if (! stripos ( $partname, "_" )) {
-				$partname = "Part_$partname";
-			}
-			$part = Factory::getInstance ( $partname );
-			if ($part) {
-				$part->setUnit ( $unit [0] );
-				if ($array) {
-					$part->setArray ( $array [0] );
-				}
-				echo $part->format ();
-			}
+		if (! $array) {
+			return;
 		}
+		$part->setUnit ( $re );
+		if (is_array($array)){
+			$part->setArray ( $array );
+		}
+		echo $part->format ();
+	}
+	static protected function part($part){
+		if(!stripos($part,'_')){
+			return "Part_$part";
+		}
+		return $part;
 	}
 }

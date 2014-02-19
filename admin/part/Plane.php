@@ -14,10 +14,10 @@ class Admin_Part_Plane extends Part {
 	}
 	protected function left() {
 		$div=new Html();
-		$div->add(Lang::to('left'));
+		$div->add($this->lang('left'));
 	}
 	protected function right() {
 		$div=new Html();
-		$div->add(Lang::to('left'));
+		$div->add($this->lang('left'));
 	}
 }
